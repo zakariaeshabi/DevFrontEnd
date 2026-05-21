@@ -1,81 +1,59 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { prisma } from '@/lib/prisma';
 
-const DB_PATH = path.join(process.cwd(), 'db.json');
-
-type Project = {
-  id: string;
-  name: string;
-  color: string;
+type RouteContext = {
+  params: Promise<{ id: string }>;
 };
 
-type DB = {
-  projects: Project[];
-};
-
-function readDB(): DB {
-  const data = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8')) as DB;
-  return data;
-}
-
-function writeDB(data: DB) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
-}
-
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+async function readId(params: Promise<{ id: string }>) {
   const { id } = await params;
-  const db = readDB();
-  const project = db.projects.find((item) => item.id === id);
+  const numericId = Number(id);
 
-  if (!project) {
-    return NextResponse.json({ message: 'Projet introuvable.' }, { status: 404 });
+  if (!Number.isInteger(numericId) || numericId <= 0) {
+    return null;
   }
+
+  return numericId;
+}
+
+export async function GET(_request: Request, { params }: RouteContext) {
+  const id = await readId(params);
+  if (!id) return NextResponse.json({ message: 'Identifiant invalide.' }, { status: 400 });
+
+  const project = await prisma.project.findUnique({ where: { id } });
+  if (!project) return NextResponse.json({ message: 'Projet introuvable.' }, { status: 404 });
 
   return NextResponse.json(project);
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  const body = await request.json();
-  const db = readDB();
-  const index = db.projects.findIndex((item) => item.id === id);
+export async function PUT(request: Request, { params }: RouteContext) {
+  const id = await readId(params);
+  if (!id) return NextResponse.json({ message: 'Identifiant invalide.' }, { status: 400 });
 
-  if (index === -1) {
-    return NextResponse.json({ message: 'Projet introuvable.' }, { status: 404 });
+  const { name, color } = await request.json();
+  if (!name || typeof name !== 'string') {
+    return NextResponse.json({ message: 'Le nom du projet est obligatoire.' }, { status: 400 });
   }
 
-  db.projects[index] = {
-    ...db.projects[index],
-    name: body.name || db.projects[index].name,
-    color: body.color || db.projects[index].color
-  };
-
-  writeDB(db);
-
-  return NextResponse.json(db.projects[index]);
+  try {
+    const project = await prisma.project.update({
+      where: { id },
+      data: { name: name.trim(), ...(color ? { color } : {}) },
+    });
+    return NextResponse.json(project);
+  } catch {
+    return NextResponse.json({ message: 'Projet introuvable.' }, { status: 404 });
+  }
 }
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const { id } = await params;
-  const db = readDB();
-  const exists = db.projects.some((item) => item.id === id);
+export async function DELETE(_request: Request, { params }: RouteContext) {
+  const id = await readId(params);
+  if (!id) return NextResponse.json({ message: 'Identifiant invalide.' }, { status: 400 });
 
-  if (!exists) {
+  try {
+    await prisma.project.delete({ where: { id } });
+    return NextResponse.json({ message: 'Projet supprimé.' });
+  } catch {
     return NextResponse.json({ message: 'Projet introuvable.' }, { status: 404 });
   }
-
-  db.projects = db.projects.filter((item) => item.id !== id);
-  writeDB(db);
-
-  return NextResponse.json({ message: 'Projet supprimé avec succès.' });
 }

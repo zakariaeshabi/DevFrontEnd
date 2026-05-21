@@ -1,45 +1,34 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import { Inter } from 'next/font/google';
+import Link from 'next/link';
 import './globals.css';
 import LogoutButton from './components/LogoutButton';
 
+const inter = Inter({ subsets: ['latin'] });
+
 export const metadata: Metadata = {
-  title: 'TaskFlow Next',
-  description: 'TP Next.js — Server Actions, API Routes et Auth cookies'
+  title: 'DevFrontEnd Manager',
+  description: 'TP Next.js full-stack avec Prisma, SQLite et performance',
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies();
-  const session = cookieStore.get('session');
-  const user = session ? JSON.parse(session.value) : null;
+  const isAuthenticated = Boolean(cookieStore.get('session')?.value);
 
   return (
     <html lang="fr">
-      <body>
-        <header
-          style={{
-            background: '#1B8C3E',
-            color: 'white',
-            padding: '1rem 2rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          <a href="/" style={{ fontWeight: 700, fontSize: 22 }}>
-            TaskFlow
-          </a>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {user && <span>Bienvenue, {user.name}</span>}
-            {user && <LogoutButton />}
-            {!user && (
-              <a href="/login" style={{ color: 'white', textDecoration: 'underline' }}>
-                Login
-              </a>
-            )}
+      <body className={inter.className}>
+        <header className="header">
+          <div className="container header-inner">
+            <Link className="brand" href="/">DevFrontEnd Manager</Link>
+            <nav className="nav">
+              <Link href="/dashboard">Dashboard</Link>
+              {isAuthenticated ? <LogoutButton /> : <Link href="/login">Connexion</Link>}
+            </nav>
           </div>
         </header>
-        <main>{children}</main>
+        <main className="container" style={{ padding: '2rem 0' }}>{children}</main>
       </body>
     </html>
   );

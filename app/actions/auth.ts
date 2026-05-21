@@ -2,32 +2,33 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
 
-export async function login(prevState: { error?: string } | null, formData: FormData) {
-  const email = String(formData.get('email') || '');
+export type LoginState = {
+  error?: string;
+};
+
+export async function loginAction(_previousState: LoginState, formData: FormData): Promise<LoginState> {
+  const email = String(formData.get('email') || '').trim().toLowerCase();
   const password = String(formData.get('password') || '');
 
-  if (email !== 'admin@taskflow.com' || password !== 'password123') {
-    return { error: 'Email ou mot de passe incorrect' };
+  if (!email || !password) {
+    return { error: 'Veuillez saisir votre email et votre mot de passe.' };
+  }
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user || user.password !== password) {
+    return { error: 'Email ou mot de passe incorrect.' };
   }
 
   const cookieStore = await cookies();
-
-  cookieStore.set(
-    'session',
-    JSON.stringify({
-      email,
-      name: 'Admin',
-      role: 'admin'
-    }),
-    {
-      httpOnly: true,
-      secure: false,
-      maxAge: 3600,
-      path: '/',
-      sameSite: 'lax'
-    }
-  );
+  cookieStore.set('session', String(user.id), {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7,
+  });
 
   redirect('/dashboard');
 }

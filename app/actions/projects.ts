@@ -1,49 +1,44 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { prisma } from '@/lib/prisma';
 
-const BASE_URL = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+function getProjectId(formData: FormData) {
+  const id = Number(formData.get('id'));
+  if (!Number.isInteger(id) || id <= 0) {
+    throw new Error('Identifiant de projet invalide.');
+  }
+  return id;
+}
 
 export async function addProject(formData: FormData) {
   const name = String(formData.get('name') || '').trim();
   const color = String(formData.get('color') || '#3498db');
 
-  if (!name) return;
+  if (!name) {
+    throw new Error('Le nom du projet est obligatoire.');
+  }
 
-  await fetch(`${BASE_URL}/api/projects`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, color })
-  });
-
+  await prisma.project.create({ data: { name, color } });
   revalidatePath('/dashboard');
+  revalidatePath('/projects/[id]', 'page');
 }
 
 export async function renameProject(formData: FormData) {
-  const id = String(formData.get('id') || '');
-  const newName = String(formData.get('newName') || '').trim();
-  const color = String(formData.get('color') || '#3498db');
+  const id = getProjectId(formData);
+  const name = String(formData.get('name') || '').trim();
 
-  if (!id || !newName) return;
+  if (!name) {
+    throw new Error('Le nouveau nom est obligatoire.');
+  }
 
-  await fetch(`${BASE_URL}/api/projects/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: newName, color })
-  });
-
+  await prisma.project.update({ where: { id }, data: { name } });
   revalidatePath('/dashboard');
   revalidatePath(`/projects/${id}`);
 }
 
 export async function deleteProject(formData: FormData) {
-  const id = String(formData.get('id') || '');
-
-  if (!id) return;
-
-  await fetch(`${BASE_URL}/api/projects/${id}`, {
-    method: 'DELETE'
-  });
-
+  const id = getProjectId(formData);
+  await prisma.project.delete({ where: { id } });
   revalidatePath('/dashboard');
 }

@@ -1,49 +1,21 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const DB_PATH = path.join(process.cwd(), 'db.json');
-
-type Project = {
-  id: string;
-  name: string;
-  color: string;
-};
-
-type DB = {
-  projects: Project[];
-};
-
-function readDB(): DB {
-  const data = JSON.parse(fs.readFileSync(DB_PATH, 'utf-8')) as DB;
-  return data;
-}
-
-function writeDB(data: DB) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
-}
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
-  const db = readDB();
-  return NextResponse.json(db.projects);
+  const projects = await prisma.project.findMany({ orderBy: { createdAt: 'desc' } });
+  return NextResponse.json(projects);
 }
 
 export async function POST(request: Request) {
-  const body = await request.json();
-  const db = readDB();
+  const { name, color } = await request.json();
 
-  if (!body.name || !body.color) {
-    return NextResponse.json({ message: 'Le nom et la couleur sont obligatoires.' }, { status: 400 });
+  if (!name || typeof name !== 'string') {
+    return NextResponse.json({ message: 'Le nom du projet est obligatoire.' }, { status: 400 });
   }
 
-  const newProject: Project = {
-    id: String(Date.now()),
-    name: body.name,
-    color: body.color
-  };
+  const project = await prisma.project.create({
+    data: { name: name.trim(), color: color || '#3498db' },
+  });
 
-  db.projects.push(newProject);
-  writeDB(db);
-
-  return NextResponse.json(newProject, { status: 201 });
+  return NextResponse.json(project, { status: 201 });
 }
