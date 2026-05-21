@@ -1,5 +1,5 @@
 .sidebar {
-  width: 240px;
+  width: 280px;
   background: white;
   border-right: 1px solid #ddd;
   transition: margin-left 0.3s ease, opacity 0.3s ease;
@@ -13,7 +13,7 @@
 }
 
 .closed {
-  margin-left: -240px;
+  margin-left: -280px;
   opacity: 0;
 }
 
@@ -33,18 +33,32 @@
   gap: 10px;
 }
 
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .item {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 10px;
+  padding: 10px;
+  text-decoration: none;
   border-radius: 10px;
-  cursor: default;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
+  color: #111;
 }
 
 .item:hover {
   background: #f6f6f6;
+}
+
+.active {
+  background: #e7f6ec;
+  color: #145a2a;
+  font-weight: 600;
 }
 
 .dot {
@@ -55,6 +69,27 @@
 }
 
 .name {
-  color: #111;
   font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.actionBtn {
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 8px;
+  padding: 0.35rem 0.45rem;
+  cursor: pointer;
+}
+
+.actionBtn:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.actionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
