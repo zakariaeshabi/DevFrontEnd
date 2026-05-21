@@ -1,132 +1,92 @@
-# TaskFlow - TP4
+# TP Next.js S1 — TaskFlow Next
 
-- React Router v6
-- Axios
-- Protected routes
-- CRUD complet des projets
-- Page détail projet
-- Navigation avec NavLink
-- Gestion loading / erreurs
-- Composants MUI et Bootstrap pour le TP4
+Ce projet est une réalisation complète du TP **Séance 1 Next.js — Du CSR au SSR**.
+
+## Objectifs réalisés
+
+- Création d’un projet Next.js avec App Router et TypeScript.
+- Mise en place du routing par dossiers.
+- Création des routes : `/`, `/login`, `/dashboard`, `/projects/[id]`.
+- Ajout d’un layout global avec Header persistant.
+- Chargement des projets côté serveur avec `fetch` sans `useEffect`.
+- Création d’une route dynamique avec récupération de `params`.
+- Gestion d’erreur si un projet n’existe pas.
+- Création d’un formulaire Login en Client Component avec `'use client'`.
+- Utilisation de `json-server` sur le port `4000`.
+- Réponses complètes aux questions Q1 à Q15 dans `REPONSES_TP.md`.
 
 ## Installation
 
+```bash
 npm install
-npm run api
+```
+
+## Lancer json-server
+
+Dans un premier terminal :
+
+```bash
+npm run server
+```
+
+Le serveur JSON démarre sur :
+
+```txt
+http://localhost:4000
+```
+
+## Lancer Next.js
+
+Dans un deuxième terminal :
+
+```bash
 npm run dev
+```
 
+L’application démarre sur :
 
-## Routes utiles
-- `/login` : login original TP3
-- `/login-mui` : login Material UI
-- `/login-bs` : login React-Bootstrap
-- `/tp4` : page de démonstration TP4
-- `/dashboard` : application principale
+```txt
+http://localhost:3000
+```
 
-## Comptes de test
-- admin@taskflow.com / admin123
-- ali@taskflow.com / ali123
-- sara@taskflow.com / sara123
+## Lancer les deux en même temps
 
-## Réponses TP4
+```bash
+npm run dev:all
+```
 
-## Partie 1 — Header MUI
+## Compte de test
 
-### Q1 — Combien de lignes de CSS pour le Header MUI ?
-Pour `HeaderMUI`, j’ai écrit **0 ligne de CSS dédiée**.  
-Le style est géré directement avec `sx={{ ... }}` dans les composants Material UI.
+```txt
+Email : admin@taskflow.com
+Mot de passe : 123456
+```
 
-Dans le Header classique du TP3, `Header.module.css` contient **83 lignes** dans le fichier fourni, donc le passage à MUI réduit fortement la quantité de CSS externe.
+## Routes à tester
 
-## Partie 2 — Login MUI
+- Accueil : `http://localhost:3000`
+- Login : `http://localhost:3000/login`
+- Dashboard : `http://localhost:3000/dashboard`
+- Projet existant : `http://localhost:3000/projects/1`
+- Projet inexistant : `http://localhost:3000/projects/42`
 
-Le composant `LoginMUI.tsx` reprend la logique du login du TP3 :
-- `useState` pour `email` et `password`
-- appel Axios vers `/users?email=...`
-- vérification du mot de passe
-- `dispatch` des actions `LOGIN_START`, `LOGIN_SUCCESS`, `LOGIN_FAILURE`
+## Structure du projet
 
-Le style est fait avec des composants MUI (`Box`, `Card`, `TextField`, `Button`, `Alert`) et `sx={{}}`.
-
-## Partie 3 — Header Bootstrap
-
-### Q2 — Comparaison Header MUI vs Bootstrap
-Les deux sont lisibles, mais :
-- **Bootstrap** est souvent plus court pour ce type d’interface simple.
-- **MUI** est plus riche et plus cohérent visuellement grâce aux composants prêts à l’emploi et au système `sx`.
-
-En pratique :
-- **Bootstrap** = plus direct, plus proche du HTML + classes
-- **MUI** = plus structuré, plus flexible pour du design applicatif
-
-## Partie 4 — Login Bootstrap
-
-Le composant `LoginBS.tsx` garde exactement la même logique que `LoginMUI.tsx`, mais remplace les composants par :
-- `Container`
-- `Card`
-- `Form`
-- `Button`
-- `Alert`
-
-### Q3 — `sx={{}}` ou `className` ?
-Je préfère **`sx={{}}` pour MUI** et **`className` pour Bootstrap** dans leurs contextes respectifs.
-
-Pourquoi :
-- `sx` est très pratique pour personnaliser vite un composant MUI sans créer de CSS séparé.
-- `className` est naturel avec Bootstrap, car le framework repose déjà sur des classes utilitaires.
-
-## Partie 5 — Tableau comparatif
-
-### Q4 — Une seule library en production ?
-Je choisirais **Material UI** pour TaskFlow en production, car :
-- l’UI est plus homogène,
-- la personnalisation est plus fine,
-- l’écosystème composants est très complet,
-- l’application ressemble davantage à une vraie app de gestion.
-
-## Partie 6 — Architecture Base de Données
-
-### Q5 — Pourquoi React ne peut pas se connecter directement à MySQL ?
-Parce que React tourne **dans le navigateur**.  
-Le navigateur ne doit pas exposer :
-- les identifiants MySQL,
-- le protocole natif de la base,
-- les règles métier sensibles.
-
-Il faut un **backend intermédiaire** (Express, PHP, Spring, etc.) pour sécuriser et contrôler l’accès.
-
-### Q6 — 3 raisons de ne pas utiliser json-server en production
-1. Ce n’est pas fait pour la sécurité et l’authentification réelle.
-2. Ce n’est pas une vraie couche backend métier robuste.
-3. Ce n’est pas adapté à la scalabilité, aux transactions et aux règles complexes.
-
-### Q7 — Pourquoi Firebase permet une connexion directe alors que MySQL non ?
-Firebase fournit un **SDK côté client** et des **services cloud** pensés pour être utilisés directement depuis une app front-end, avec des règles d’accès côté Firebase.
-
-MySQL, lui, est une base relationnelle qu’on ne doit pas exposer directement au navigateur.
-
-## Partie 7 — Réflexion
-
-### Q8 — Passage en production avec de vrais utilisateurs
-Étapes nécessaires :
-- remplacer json-server par un backend sécurisé,
-- ajouter authentification réelle,
-- gérer rôles et permissions,
-- valider les données côté serveur,
-- sécuriser les secrets,
-- mettre en place logs, monitoring et sauvegardes,
-- utiliser une vraie base de données de production.
-
-### Q9 — Risque de dépendre de bibliothèques externes
-Le risque principal est la dépendance :
-- taille du bundle plus grande,
-- changements de version,
-- breaking changes,
-- maintenance future plus difficile.
-
-### Q10 — App de chat en temps réel
-Pour une app de chat en temps réel, je choisirais **Firebase** ou un **backend custom avec WebSocket**.  
-`json-server` ne suffit pas, car il n’offre pas le temps réel.  
-Le meilleur choix dépend du niveau de contrôle voulu :
-- **Firebase** : rapide à mettre en place
-- **Backend custom** : plus flexible et plus professionnel
+```txt
+taskflow-next-complet/
+├── app/
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── login/
+│   │   └── page.tsx
+│   ├── dashboard/
+│   │   └── page.tsx
+│   └── projects/
+│       └── [id]/
+│           └── page.tsx
+├── db.json
+├── package.json
+├── README.md
+└── REPONSES_TP.md
+```

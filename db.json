@@ -1,65 +1,42 @@
 {
-  "projects": [
-    {
-      "id": "1",
-      "name": "Site E-commerce",
-      "color": "#e74c3c"
-    },
-    {
-      "id": "2",
-      "name": "App Mobile",
-      "color": "#3498db"
-    },
-    {
-      "id": "3",
-      "name": "API Backend",
-      "color": "#2ecc71"
-    }
-  ],
-  "columns": [
-    {
-      "id": "todo",
-      "title": "À Faire",
-      "tasks": [
-        "Maquettes UI",
-        "Specs techniques"
-      ]
-    },
-    {
-      "id": "progress",
-      "title": "En Cours",
-      "tasks": [
-        "API Auth",
-        "Page Login"
-      ]
-    },
-    {
-      "id": "done",
-      "title": "Terminé",
-      "tasks": [
-        "Setup projet",
-        "Config ESLint"
-      ]
-    }
-  ],
   "users": [
     {
       "id": "1",
+      "name": "Administrateur TaskFlow",
       "email": "admin@taskflow.com",
-      "password": "admin123",
-      "name": "Admin"
+      "password": "123456"
     },
     {
       "id": "2",
-      "email": "ali@taskflow.com",
-      "password": "ali123",
-      "name": "Ali"
+      "name": "Aya Challal",
+      "email": "aya@taskflow.com",
+      "password": "123456"
+    }
+  ],
+  "projects": [
+    {
+      "id": "1",
+      "name": "Application mobile TaskFlow",
+      "color": "#1B8C3E",
+      "description": "Projet principal de gestion collaborative des tâches et des projets.",
+      "status": "En cours",
+      "members": ["Aya", "Youssef", "Hamza"]
+    },
+    {
+      "id": "2",
+      "name": "Refonte Dashboard",
+      "color": "#2563EB",
+      "description": "Amélioration de l’interface dashboard avec une meilleure visibilité des projets.",
+      "status": "Planifié",
+      "members": ["Sara", "Omar"]
     },
     {
       "id": "3",
-      "email": "sara@taskflow.com",
-      "password": "sara123",
-      "name": "Sara"
+      "name": "Module Authentification",
+      "color": "#F97316",
+      "description": "Gestion de la connexion utilisateur et de la redirection vers le dashboard.",
+      "status": "Terminé",
+      "members": ["Ilyas", "Aya"]
     }
   ]
 }
