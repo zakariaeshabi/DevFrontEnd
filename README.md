@@ -10,7 +10,7 @@ npm install
 ## Lancer l’API (json-server)
 Terminal 1 :
 
-npm run api
+npx json-server --watch db.json --port 4000
 
 ➡ API sur `http://localhost:4000`
 
@@ -24,3 +24,4 @@ npm run dev
 ## Vérifier
 - `http://localhost:4000/projects`
 - `http://localhost:4000/columns`
+- `http://localhost:4000/users`
