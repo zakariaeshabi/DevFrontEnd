@@ -2,64 +2,18 @@
   "projects": [
     {
       "id": "1",
-      "name": "Site E-commerce",
-      "color": "#e74c3c"
-    },
-    {
-      "id": "2",
-      "name": "App Mobile",
+      "name": "Refonte interface TaskFlow",
       "color": "#3498db"
     },
     {
-      "id": "3",
-      "name": "API Backend",
-      "color": "#2ecc71"
-    }
-  ],
-  "columns": [
-    {
-      "id": "todo",
-      "title": "À Faire",
-      "tasks": [
-        "Maquettes UI",
-        "Specs techniques"
-      ]
-    },
-    {
-      "id": "progress",
-      "title": "En Cours",
-      "tasks": [
-        "API Auth",
-        "Page Login"
-      ]
-    },
-    {
-      "id": "done",
-      "title": "Terminé",
-      "tasks": [
-        "Setup projet",
-        "Config ESLint"
-      ]
-    }
-  ],
-  "users": [
-    {
-      "id": "1",
-      "email": "admin@taskflow.com",
-      "password": "admin123",
-      "name": "Admin"
-    },
-    {
       "id": "2",
-      "email": "ali@taskflow.com",
-      "password": "ali123",
-      "name": "Ali"
+      "name": "Application mobile interne",
+      "color": "#9b59b6"
     },
     {
       "id": "3",
-      "email": "sara@taskflow.com",
-      "password": "sara123",
-      "name": "Sara"
+      "name": "Automatisation reporting",
+      "color": "#1B8C3E"
     }
   ]
 }
