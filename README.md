@@ -1,92 +1,55 @@
-# TP Next.js S1 — TaskFlow Next
+# TaskFlow — TP5
 
-Ce projet est une réalisation complète du TP **Séance 1 Next.js — Du CSR au SSR**.
 
-## Objectifs réalisés
+## Lancer le projet
 
-- Création d’un projet Next.js avec App Router et TypeScript.
-- Mise en place du routing par dossiers.
-- Création des routes : `/`, `/login`, `/dashboard`, `/projects/[id]`.
-- Ajout d’un layout global avec Header persistant.
-- Chargement des projets côté serveur avec `fetch` sans `useEffect`.
-- Création d’une route dynamique avec récupération de `params`.
-- Gestion d’erreur si un projet n’existe pas.
-- Création d’un formulaire Login en Client Component avec `'use client'`.
-- Utilisation de `json-server` sur le port `4000`.
-- Réponses complètes aux questions Q1 à Q15 dans `REPONSES_TP.md`.
-
-## Installation
-
-```bash
 npm install
-```
-
-## Lancer json-server
-
-Dans un premier terminal :
-
-```bash
-npm run server
-```
-
-Le serveur JSON démarre sur :
-
-```txt
-http://localhost:4000
-```
-
-## Lancer Next.js
-
-Dans un deuxième terminal :
-
-```bash
+npm run api
 npm run dev
-```
 
-L’application démarre sur :
 
-```txt
-http://localhost:3000
-```
+## Comptes de test
+- admin@taskflow.com / admin123
+- ali@taskflow.com / ali123
+- sara@taskflow.com / sara123
 
-## Lancer les deux en même temps
+## Réponses
 
-```bash
-npm run dev:all
-```
+**Q1 — JSX et XSS**  
+Non, le script ne s’exécute pas. React échappe les chaînes de caractères dans le JSX, donc le HTML est affiché comme du texte brut.
 
-## Compte de test
+**Q2 — `dangerouslySetInnerHTML`**  
+L’HTML est injecté dans le DOM et peut s’exécuter. C’est dangereux avec des données utilisateur ou venant d’une API non maîtrisée.
 
-```txt
-Email : admin@taskflow.com
-Mot de passe : 123456
-```
+**Q3 — Header Authorization dans Network**  
+Oui, après un login réussi, les requêtes vers l’API portent le header `Authorization: Bearer ...` grâce à l’intercepteur Axios.
 
-## Routes à tester
+**Q4 — Token en mémoire et pas dans `localStorage`**  
+Le `localStorage` est accessible par n’importe quel script JavaScript de la page, donc plus exposé en cas de XSS. Le state Redux en mémoire est moins persistant et donc plus sûr.
 
-- Accueil : `http://localhost:3000`
-- Login : `http://localhost:3000/login`
-- Dashboard : `http://localhost:3000/dashboard`
-- Projet existant : `http://localhost:3000/projects/1`
-- Projet inexistant : `http://localhost:3000/projects/42`
+**Q5 — Passage à Redux Toolkit**  
+On passe d’un `switch/case` manuel à `createSlice`. Les reducers paraissent mutables, mais Redux Toolkit utilise Immer pour produire un nouvel état immuable en coulisse.
 
-## Structure du projet
+**Q6 — Re-renders au toggle de la sidebar**  
+Avant optimisation, `Header`, `Sidebar` et `MainContent` se re-rendent quand la sidebar change. `MainContent` est celui qui ne devrait pas se re-rendre, car il ne dépend pas de `sidebarOpen`.
 
-```txt
-taskflow-next-complet/
-├── app/
-│   ├── globals.css
-│   ├── layout.tsx
-│   ├── page.tsx
-│   ├── login/
-│   │   └── page.tsx
-│   ├── dashboard/
-│   │   └── page.tsx
-│   └── projects/
-│       └── [id]/
-│           └── page.tsx
-├── db.json
-├── package.json
-├── README.md
-└── REPONSES_TP.md
-```
+**Q7 — Pourquoi `MainContent` ne se re-rend plus**  
+`React.memo` compare les props par comparaison superficielle. Comme `columns` garde la même référence quand la sidebar change, `MainContent` est ignoré.
+
+**Q8 — `useMemo` vs `useCallback`**  
+`useMemo` mémorise une valeur calculée. `useCallback` mémorise une fonction. On utilise `useCallback` pour garder stable une fonction passée en props.
+
+**Q10 — Profiler**  
+Cette partie dépend de vos mesures dans React DevTools. Il faut comparer avant / après `React.memo` et noter les temps de render observés dans votre environnement.
+
+## Structure importante
+
+- `src/api/axios.ts` : intercepteur token
+- `src/features/auth/authSlice.ts` : auth Redux Toolkit
+- `src/store.ts` : store Redux
+- `src/hooks/useProjects.ts` : logique CRUD
+- `src/components/Sidebar.tsx` : `React.memo`
+- `src/components/MainContent.tsx` : `React.memo`
+- `src/pages/Dashboard.tsx` : utilise le hook et Redux
+- `src/pages/ProjectDetail.tsx` : logout Redux
+- `src/main.tsx` : `Provider store={store}`
